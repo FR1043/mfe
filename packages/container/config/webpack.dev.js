@@ -25,4 +25,4 @@ const devConfig = {
     ]
 };
 
-module.exports = merge(commonConfig, devConfig); // putting devConfig 2nd, it will take priority over any other similar options from commonConfig
+module.exports = merge(commonConfig, devConfig); // putting devConfig 2nd, it will take priority over any other similar options from commonConfig 
