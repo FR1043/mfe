@@ -1,0 +1,27 @@
+# anytime we create a yml file inside this directory and push it to Github, Github will assume it is a workflow we want to execute at some point
+
+name: deploy-container
+on: # what events are we watching for
+  push:
+    branches: 
+      - master
+    paths: 
+      - 'packages/container/**' # only run this workflow when we make a change to something inside of container
+
+defaults: # set execution environment to be inside container directory. they are all executed in container folder
+  run:
+    working-directory: packages/container
+
+jobs: # jobs run in parallel
+  build: 
+    runs-on: ubuntu-latest # VMs created by Github
+    steps: 
+      - uses: actions/checkout@v2
+      - run: npm install # install dependencies into project
+      - run: npm run build # run our process
+
+      - uses: chrislennon/action-aws-cli@v1.1
+      - run: aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET_NAME }}/container/latest
+        env: 
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

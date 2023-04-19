@@ -23,3 +23,4 @@ export default () => {
 // }
 // so mount(ref.current) means to execute the mount function at the current value of ref
 // <div ref={ref}/> just refers to the reference of whatever the component is mounted on, allowing us to extract and manipulate its properties
+// React treats the ref attribute in a special way and knows to pass the reference of the DOM element to the ref object.
