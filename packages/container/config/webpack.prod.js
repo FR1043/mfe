@@ -8,7 +8,9 @@ const domain = process.env.PRODUCTION_DOMAIN; // environment variable that we se
 const prodConfig = {
     mode: 'production',
     output: {
-        filename: '[name].[contenthash].js' // this ensures that whenever we build files for prod, all the files will use this as a template for how to name them. Done because of caching issues
+        filename: '[name].[contenthash].js', // this ensures that whenever we build files for prod, all the files will use this as a template for how to name them. Done because of caching issues
+        publicPath: '/container/latest/', // this is used anytime we have some part of Webpack that refers to a file built by Webpack. Eg. when our HTML plugin refers to a js file that has been created.
+        // so whenever our HTML plugin starts to figure out script tags to add to the document, it will prepend them with the publicPath
     },
     plugins: [
         new ModuleFederationPlugin({
