@@ -1,16 +1,16 @@
 # anytime we create a yml file inside this directory and push it to Github, Github will assume it is a workflow we want to execute at some point
 
-name: deploy-container
+name: deploy-marketing
 on: # what events are we watching for
   push:
     branches: 
       - master
     paths: 
-      - 'packages/container/**' # only run this workflow when we make a change to something inside of container
+      - 'packages/marketing/**' # only run this workflow when we make a change to something inside of marketing
 
-defaults: # set execution environment to be inside container directory. they are all executed in container folder
+defaults: # set execution environment to be inside marketing directory. they are all executed in marketing folder
   run:
-    working-directory: packages/container
+    working-directory: packages/marketing
 
 jobs: # jobs run in parallel
   build: 
@@ -19,17 +19,15 @@ jobs: # jobs run in parallel
       - uses: actions/checkout@v2
       - run: npm install # install dependencies into project
       - run: npm run build # run our process
-        env:
-          PRODUCTION_DOMAIN: ${{ secrets.PRODUCTION_DOMAIN }}
 
       - uses: shinyinc/action-aws-cli@v1.2
-      - run: aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET_NAME }}/container/latest
+      - run: aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET_NAME }}/marketing/latest
         env: 
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
 
-      - run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }} --paths "/container/latest/index.html" 
+      - run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }} --paths "/marketing/latest/remoteEntry.js" 
       # this will run the invalidation for cloudfront directly here so we don't need to keep invalidating the index.html 
         env: 
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
