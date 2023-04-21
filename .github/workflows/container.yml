@@ -14,7 +14,7 @@ defaults: # set execution environment to be inside container directory. they are
 
 jobs: # jobs run in parallel
   build: 
-    runs-on: ubuntu-latest # VMs created by Github
+    runs-on: ubuntu-latest # VMs created by Github. so the dist folder that we are going to sync to S3 is all built on the VM
     steps: 
       - uses: actions/checkout@v2
       - run: npm install # install dependencies into project
@@ -22,6 +22,13 @@ jobs: # jobs run in parallel
 
       - uses: shinyinc/action-aws-cli@v1.2
       - run: aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET_NAME }}/container/latest
+        env: 
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+
+      - run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }} --paths "/container/latest/index.html" 
+      # this will run the invalidation for cloudfront directly here so we don't need to keep invalidating the index.html 
         env: 
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
